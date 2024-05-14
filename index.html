@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Global Population Charts</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script src="./copyright.js" defer></script>
+</head>
+
+<body onload="showCopyRight()">
+  <main class="footer-fixer">
+    <div class="container py-5">
+      <header class="mb-4">
+        <h1 class="text-center">Global Population Charts</h1>
+        <div class="text-center">
+          <a href="#" class="source-code-link">Source Code</a>
+        </div>
+      </header>
+      <section class="text-center">
+        <h5>Enter Three-Letter Country Code <small>(e.g., JPN)</small>. Find codes <a href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes"
+            target="_blank">here</a></h5>
+        <input type="text" id="country" placeholder="Country code" maxlength="3" class="form-control mx-auto">
+        <h5 class="mt-3">Select Indicator from the Drop-Down List</h5>
+        <select id="indicatorCode" class="form-select mx-auto custom-dropdown">
+          <option disabled selected value>Select chart to render</option>
+          <option value="SP.POP.TOTL">Population total</option>
+          <option value="SP.POP.TOTL.MA.IN">Pop. total male</option>
+          <option value="SP.POP.TOTL.FE.IN">Pop. total female</option>
+          <option value="SP.POP.65UP.FE.IN">Pop. yr.65 and above, (f)</option>
+          <option value="SP.POP.65UP.MA.IN">Pop. yr.65 and above, (m)</option>
+          <option value="SP.POP.1564.FE.IN">Pop. yr.15-64, female</option>
+          <option value="SP.POP.1564.MA.IN">Pop. yr.15-64, male</option>
+          <option value="SP.POP.0014.FE.IN">Pop. yr.0-14, female</option>
+          <option value="SP.POP.0014.MA.IN">Pop. yr.0-14, male</option>
+          <option value="SP.DYN.LE00.FE.IN">Life exp. at birth, (f)</option>
+          <option value="SP.DYN.LE00.MA.IN">Life exp. at birth, (m)</option>
+        </select>
+        <button class="btn mt-3" id="renderButton">Render Graph</button>
+        <div class="chart-container mt-4" id="chartContainer">
+          <canvas id="myChart"></canvas>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer id="copyRight" class="text-center mt-4"></footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
