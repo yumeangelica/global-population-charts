@@ -15,7 +15,7 @@
   --input-bg-color: #f8e6f3;
   --btn-bg-color: #d8b9d8;
   --btn-border-color: #b89eb8;
-  --btn-text-color: #ffffff;
+  --btn-text-color: #fff;
   --btn-focus-color: #c4a5c4;
   --main-border-color: #d7a2db;
   --btn-hover-bg-color: #c4a5c4;
@@ -32,15 +32,16 @@ main {
   margin: auto;
 }
 
-h1 {
+h1, h5 {
   color: var(--main-header-color);
   text-align: center;
+}
+
+h1 {
   margin: 30px 0;
 }
 
 h5 {
-  color: var(--main-header-color);
-  text-align: center;
   margin: 15px 0;
 }
 
@@ -64,30 +65,27 @@ footer {
   min-height: 75vh;
 }
 
-input, select {
+input, select, .btn {
   margin: 10px auto;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--main-border-color);
   background-color: var(--input-bg-color) !important;
   color: var(--main-text-color);
-  max-width: 300px;
   display: block;
+  max-width: 300px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-input:focus, input:active, input:valid, select:focus, select:active, select:valid {
-  background-color: var(--input-bg-color) !important;
+input:focus, input:active, input:valid,
+select:focus, select:active, select:valid {
   outline: none !important;
   box-shadow: 0 0 5px var(--btn-focus-color) !important;
   border-color: var(--btn-focus-color) !important;
 }
 
-/* Autocomplete styles */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
+input:-webkit-autofill, input:-webkit-autofill:hover,
+input:-webkit-autofill:focus, input:-webkit-autofill:active {
   background-color: var(--input-bg-color) !important;
   -webkit-box-shadow: 0 0 0px 1000px var(--input-bg-color) inset !important;
   box-shadow: 0 0 0px 1000px var(--input-bg-color) inset !important;
@@ -98,14 +96,9 @@ input:-webkit-autofill:active {
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
-  background-color: var(--input-bg-color);
   background-image: url('./img/br_down.webp');
   background-repeat: no-repeat;
   background-position: calc(100% - 10px) center;
-}
-
-.custom-dropdown:focus {
-  outline: none;
 }
 
 .custom-dropdown option {
@@ -118,20 +111,12 @@ input:-webkit-autofill:active {
 }
 
 .btn {
-  background-color: var(--btn-bg-color);
-  color: var(--btn-text-color);
-  border: 1px solid var(--btn-border-color);
-  border-radius: 8px;
-  margin: 20px auto;
   width: 150px;
-  padding: 10px;
   font-size: 16px;
-  display: block;
 }
 
 .btn:hover {
   background-color: var(--btn-hover-bg-color);
-  border: 1px solid var(--btn-border-color);
 }
 
 .chart-container {
