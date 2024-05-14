@@ -1,0 +1,150 @@
+/* Reset browser formatting */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root pseudo class for variables */
+:root {
+  --main-header-color: #e287eb;
+  --main-bg-color: #fff1fd;
+  --main-text-color: #50404d;
+  --src-code-color: #ab4dbc;
+  --src-code-hover: #d958e0;
+  --input-bg-color: #f8e6f3;
+  --btn-bg-color: #d8b9d8;
+  --btn-border-color: #b89eb8;
+  --btn-text-color: #ffffff;
+  --btn-focus-color: #c4a5c4;
+  --main-border-color: #d7a2db;
+  --btn-hover-bg-color: #c4a5c4;
+}
+
+body {
+  background: var(--main-bg-color);
+  font-family: 'Arial', sans-serif;
+  margin: auto;
+}
+
+main {
+  width: 90%;
+  margin: auto;
+}
+
+h1 {
+  color: var(--main-header-color);
+  text-align: center;
+  margin: 30px 0;
+}
+
+h5 {
+  color: var(--main-header-color);
+  text-align: center;
+  margin: 15px 0;
+}
+
+a {
+  text-decoration: none;
+  color: var(--src-code-color);
+}
+
+a:hover {
+  color: var(--src-code-hover);
+  text-decoration: underline;
+}
+
+footer {
+  color: var(--main-text-color);
+  margin: 15px;
+  text-align: center;
+}
+
+.footer-fixer {
+  min-height: 75vh;
+}
+
+input, select {
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--main-border-color);
+  background-color: var(--input-bg-color) !important;
+  color: var(--main-text-color);
+  max-width: 300px;
+  display: block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:focus, input:active, input:valid, select:focus, select:active, select:valid {
+  background-color: var(--input-bg-color) !important;
+  outline: none !important;
+  box-shadow: 0 0 5px var(--btn-focus-color) !important;
+  border-color: var(--btn-focus-color) !important;
+}
+
+/* Autocomplete styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: var(--input-bg-color) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--input-bg-color) inset !important;
+  box-shadow: 0 0 0px 1000px var(--input-bg-color) inset !important;
+  -webkit-text-fill-color: var(--main-text-color) !important;
+}
+
+.custom-dropdown {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--input-bg-color);
+  background-image: url('./img/br_down.webp');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center;
+}
+
+.custom-dropdown:focus {
+  outline: none;
+}
+
+.custom-dropdown option {
+  background-color: var(--input-bg-color);
+  color: var(--main-text-color);
+}
+
+.source-code-link {
+  font-size: 18px;
+}
+
+.btn {
+  background-color: var(--btn-bg-color);
+  color: var(--btn-text-color);
+  border: 1px solid var(--btn-border-color);
+  border-radius: 8px;
+  margin: 20px auto;
+  width: 150px;
+  padding: 10px;
+  font-size: 16px;
+  display: block;
+}
+
+.btn:hover {
+  background-color: var(--btn-hover-bg-color);
+  border: 1px solid var(--btn-border-color);
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  margin-top: 20px;
+  display: none;
+}
+
+canvas {
+  background: #fcf4ff;
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
