@@ -1,3 +1,35 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // Array containing the options for the indicators
+  const indicatorOptions = [
+    { value: 'SP.POP.TOTL', text: 'Population total' },
+    { value: 'SP.POP.TOTL.MA.IN', text: 'Pop. total male' },
+    { value: 'SP.POP.TOTL.FE.IN', text: 'Pop. total female' },
+    { value: 'SP.POP.65UP.FE.IN', text: 'Pop. yr.65 and above, (f)' },
+    { value: 'SP.POP.65UP.MA.IN', text: 'Pop. yr.65 and above, (m)' },
+    { value: 'SP.POP.1564.FE.IN', text: 'Pop. yr.15-64, female' },
+    { value: 'SP.POP.1564.MA.IN', text: 'Pop. yr.15-64, male' },
+    { value: 'SP.POP.0014.FE.IN', text: 'Pop. yr.0-14, female' },
+    { value: 'SP.POP.0014.MA.IN', text: 'Pop. yr.0-14, male' },
+    { value: 'SP.DYN.LE00.FE.IN', text: 'Life exp. at birth, (f)' },
+    { value: 'SP.DYN.LE00.MA.IN', text: 'Life exp. at birth, (m)' }
+  ];
+
+  // Get the select element by its ID
+  const indicatorSelect = document.getElementById('indicatorCode');
+
+  // Loop through each option in the array
+  indicatorOptions.forEach(option => {
+    // Create a new option element
+    const opt = document.createElement('option');
+    // Set the value of the option
+    opt.value = option.value;
+    // Set the text content of the option
+    opt.textContent = option.text;
+    // Append the option to the select element
+    indicatorSelect.appendChild(opt);
+  });
+});
+
 // Current chart instance
 let currentChart;
 
