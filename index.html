@@ -3,39 +3,113 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Global Population Charts</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+  <title>Global Population Charts - Interactive Data Visualization Tool</title>
+  <meta name="description"
+    content="Create interactive population charts for any country using World Bank data. Beautiful, modern data visualization tool with accessibility features.">
+  <meta name="keywords" content="population charts, data visualization, world bank data, interactive charts, country statistics">
+  <meta name="author" content="yumeangelica">
+  <meta name="robots" content="index, follow">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="stylesheet" href="./styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+
   <script src="./app.js" defer></script>
   <script src="./copyright.js" defer></script>
 </head>
 
 <body>
-  <main class="footer-fixer">
-    <div class="container py-5">
-      <header class="mb-4 text-center">
-        <h1>Global Population Charts</h1>
-        <a href="https://github.com/yumeangelica/global-population-charts" class="source-code-link">Source Code</a>
-      </header>
-      <section class="text-center">
-        <h5>Enter Three-Letter Country Code <small>(e.g., JPN)</small>. Find codes <a href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes"
-            target="_blank">here</a></h5>
-        <input type="text" id="country" placeholder="Country code" maxlength="3" class="form-control mx-auto">
-        <h5 class="mt-3">Select Indicator from the Drop-Down List</h5>
-        <select id="indicatorCode" class="form-select mx-auto custom-dropdown"></select>
-        <button class="btn mt-3" id="renderButton">Render Graph</button>
-        <div class="chart-container mt-4" id="chartContainer">
-          <canvas id="myChart"></canvas>
-        </div>
-      </section>
-    </div>
-  </main>
-  <footer id="copyRight" class="text-center mt-4"></footer>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <div class="app-container">
+    <main>
+      <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section text-center mb-5">
+          <div class="hero-content">
+            <h1 class="display-4 fw-bold mb-3">Global Population Charts</h1>
+            <p class="lead text-muted mb-4">Visualize global population data with interactive charts</p>
+            <div class="hero-links">
+              <a href="https://github.com/yumeangelica/global-population-charts" class="external-link" target="_blank" rel="noopener noreferrer"
+                aria-label="View source code on GitHub (opens in new tab)">
+                View Source Code
+              </a>
+              <a href="https://yumeangelica.github.io" class="external-link" target="_blank" rel="noopener noreferrer"
+                aria-label="View portfolio website (opens in new tab)">
+                View Portfolio
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Content Section -->
+        <section class="main-content">
+          <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+              <!-- Input Form Card -->
+              <div class="input-card mb-4" role="form" aria-labelledby="formTitle">
+                <div class="card-body">
+                  <div class="visually-hidden" id="formTitle">Population Chart Generator Form</div>
+                  <div class="form-section mb-4">
+                    <label for="country" class="form-label">
+                      <h5 class="mb-2">Country Code</h5>
+                      <small class="text-muted" id="countryHelp">Enter three-letter country code (e.g., JPN, USA, FIN)</small>
+                    </label>
+                    <input type="text" id="country" placeholder="Country code (e.g., JPN)" maxlength="3" class="form-control form-input"
+                      aria-describedby="countryHelp" autocomplete="off" aria-required="true" aria-invalid="false">
+                  </div>
+
+                  <div class="form-section mb-4">
+                    <label for="indicatorCode" class="form-label">
+                      <h5 class="mb-2">Population Indicator</h5>
+                      <small class="text-muted" id="indicatorHelp">Select the type of population data to visualize</small>
+                    </label>
+                    <select id="indicatorCode" class="form-select" aria-describedby="indicatorHelp" aria-required="true" aria-invalid="false">
+                      <option value="">Choose an indicator...</option>
+                    </select>
+                  </div>
+
+                  <div class="form-section text-center">
+                    <button class="btn btn-primary" id="renderButton" type="button" aria-describedby="buttonHelp"
+                      aria-label="Generate population chart">
+                      <span class="btn-text">Generate Chart</span>
+                      <span class="btn-icon" aria-hidden="true">📊</span>
+                    </button>
+                    <small class="text-muted d-block mt-2" id="buttonHelp">Click to create chart or press Enter</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Help Text -->
+              <div class="text-center mb-4">
+                <small class="help-text">
+                  Need help finding country codes?
+                  <a href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes" target="_blank" rel="noopener noreferrer"
+                    aria-label="View complete country code list on Wikipedia (opens in new tab)">View complete list</a>
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Section -->
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="chart-container" id="chartContainer" role="region" aria-labelledby="chartTitle">
+                <div class="chart-header text-center mb-3">
+                  <h3 class="chart-title" id="chartTitle">Population Data Chart</h3>
+                </div>
+                <div class="chart-wrapper">
+                  <canvas id="myChart" role="img" aria-label="Population data chart will be displayed here after generating"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer id="copyRight" class="text-center mt-4"></footer>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLlvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 
 </html>
