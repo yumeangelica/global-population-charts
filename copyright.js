@@ -1,7 +1,14 @@
+/**
+ * Display copyright information in the footer
+ * Automatically updates the copyright year to the current year
+ * Uses optional chaining for safe DOM manipulation
+ */
 const showCopyRight = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  let copyRightElement = document.getElementById('copyRight');
+  const year = new Date().getFullYear();
+  const copyRightElement = document.getElementById('copyRight');
 
-  copyRightElement.textContent = `© 2020 – ${year} yumeangelica.github.io. All Rights Reserved.`;
-}
+  // Safe DOM manipulation with proper null check
+  if (copyRightElement) {
+    copyRightElement.textContent = `© 2021 – ${year} yumeangelica.github.io. All Rights Reserved.`;
+  }
+};
