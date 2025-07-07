@@ -573,6 +573,11 @@ footer {
   .chart-wrapper {
     height: 280px;
   }
+
+  footer {
+    font-size: 0.65rem;
+    padding: 4px;
+  }
 }
 
 /* Browser styling overrides */
