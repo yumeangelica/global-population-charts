@@ -1,48 +1,54 @@
 # Global Population Charts
 
-Originally developed in 2021, this application has been **modernized in 2025** to showcase contemporary web development practices while maintaining its core vanilla JavaScript foundation. The app visualizes global population data through interactive charts, allowing users to explore demographic trends for any country using World Bank data.
+A vanilla JavaScript application that visualizes global population data through interactive charts, using World Bank API data. Zero framework dependencies — only Chart.js for visualization.
+
+Originally developed in 2021, modernized in 2024–2026 with portfolio-synced design, accessibility support, and responsive layout.
 
 ## Features
 
-- **Country Code Input**: Enter any three-letter country code (ISO 3166-1 alpha-3)
-- **Comprehensive Indicators**: Choose from 34 demographic indicators including:
-  - Population totals and growth rates
-  - Age distribution and dependency ratios
-  - Birth and death rates, fertility rates
-  - Life expectancy and mortality rates
-  - Urban and rural population data
-  - Population density and survival rates
-- **Interactive Charts**: Beautiful, responsive charts powered by Chart.js with custom styling
-- **Accessibility First**: WCAG 2.1 AA compliant with screen reader support and keyboard navigation
-- **Responsive Design**: Optimized for all devices from mobile to desktop
-- **Modern UI**: Clean, professional design with a cohesive pink color palette
-- **Real-time Data**: Fetches latest demographic data from the World Bank API
+- **Country Code Input** — enter any three-letter ISO 3166-1 alpha-3 code
+- **34 Demographic Indicators** — population totals, growth rates, age distribution, dependency ratios, birth/death rates, fertility, life expectancy, mortality, urban/rural data, density, survival rates
+- **Interactive Charts** — responsive bar charts powered by Chart.js with custom portfolio-themed colors
+- **Input Validation** — 3-letter code validation with error feedback
+- **Loading States** — button state changes during API fetch
+- **Accessibility** — ARIA labels, keyboard navigation (Enter to submit), screen reader announcements
+- **Responsive Design** — mobile-first layout from 480px to desktop
 
 ## Technologies
 
-- **Vanilla JavaScript** - Core functionality and API integration
-- **CSS3** - Modern styling with CSS variables and animations
-- **HTML5** - Semantic markup with accessibility features
-- **Bootstrap 5.3.7** - Responsive grid system and components
-- **Chart.js 4.5.0** - Interactive chart visualization
-- **World Bank API** - Real-time demographic data
+- **Vanilla JavaScript (ES6+)** — async/await, DOM manipulation, no frameworks
+- **HTML5** — semantic markup with ARIA attributes
+- **CSS3** — custom properties, Flexbox, responsive design
+- **Google Fonts (Inter)** — consistent typography across portfolio
+- **Chart.js 4.5.0** — interactive data visualization
+- **World Bank API** — real-time demographic data
+- **Zero Framework Dependencies** — no Bootstrap, no npm packages
 
-## Quick Start
+## Getting Started
 
-1. **Enter Country Code**: Input a valid three-letter country code (e.g., `JPN`, `USA`, `FIN`)
-2. **Select Indicator**: Choose from population metrics in the dropdown
-3. **Generate Chart**: Click "Generate Chart" or press Enter
-4. **Explore Data**: View interactive charts with hover details and responsive design
+1. Open `index.html` in any modern web browser
+2. Enter a valid three-letter country code (e.g., `JPN`, `USA`, `FIN`)
+3. Select a population indicator from the dropdown
+4. Click "Generate Chart" or press Enter
 
-## 2025 Modernization Updates
+## Project Structure
 
-- Enhanced error handling and input validation
-- Improved accessibility with ARIA labels and keyboard navigation
-- Modern responsive design with CSS Grid and Flexbox
-- Loading states and user feedback improvements
-- Security enhancements (noopener, noreferrer)
-- Professional color scheme and typography
-- Performance optimizations and code refactoring
+```
+├── index.html      # Main HTML document
+├── styles.css      # All styles with CSS custom properties
+├── app.js          # API integration, chart rendering, validation
+├── copyright.js    # Dynamic footer copyright year
+├── LICENSE         # CC BY-NC-SA 4.0
+└── README.md
+```
+
+## Browser Support
+
+- Chrome 88+
+- Firefox 85+
+- Safari 14+
+- Edge 88+
+- Mobile: iOS Safari, Chrome Mobile, Samsung Internet
 
 ## License
 
@@ -50,4 +56,4 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-Sh
 
 ---
 
-**Created with love by [yumeangelica](https://yumeangelica.github.io) | 2021-2025**
+**Created with love by [yumeangelica](https://yumeangelica.github.io) | 2021–2026**

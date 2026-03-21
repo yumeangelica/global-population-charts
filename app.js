@@ -381,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.chartCanvas.setAttribute('aria-label', chartDescription);
 
     // Show chart container with animation
-    elements.chartContainer.style.display = 'block';
     elements.chartContainer.classList.add('show');
 
     // Announce chart completion to screen readers
