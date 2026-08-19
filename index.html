@@ -3,83 +3,118 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Global Population Charts - Interactive Data Visualization Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Global Population Charts — World Bank Data</title>
   <meta name="description"
-    content="Create interactive population charts for any country using World Bank data. Modern data visualization tool with accessibility features.">
+    content="Explore accessible population and demographic trends for countries worldwide using World Bank data.">
   <meta name="author" content="yumeangelica">
-  <meta name="theme-color" content="#b24d89">
+  <meta name="theme-color" content="rgb(178, 77, 137)">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="./fonts/comfortaa-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="./theme.js"></script>
   <link rel="stylesheet" href="./styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+  <script src="./vendor/chart.umd.min.js" defer></script>
   <script src="./app.js" defer></script>
   <script src="./copyright.js" defer></script>
 </head>
 
 <body>
-  <main>
-    <h1>📊 Global Population Charts</h1>
+  <a class="skip-link" href="#main-content">Skip to chart generator</a>
 
-    <nav class="navigation-links" aria-label="External links">
-      <a href="https://github.com/yumeangelica/global-population-charts" class="external-link" target="_blank"
-        rel="noopener noreferrer" aria-label="View source code on GitHub (opens in new tab)">Source Code</a>
-      <a href="https://yumeangelica.github.io" class="external-link" target="_blank" rel="noopener noreferrer"
-        aria-label="Visit portfolio website (opens in new tab)">My Portfolio</a>
-    </nav>
+  <div class="site-shell">
+    <header class="site-header">
+      <p class="eyebrow">World Bank open data</p>
+      <h1><span aria-hidden="true">📊</span> Global Population Charts</h1>
+      <p class="subtitle">Turn decades of demographic data into a clear, accessible trend.</p>
 
-    <p class="subtitle">Visualize global population data with interactive charts</p>
-
-    <!-- Input form -->
-    <div class="form-card" role="form" aria-labelledby="formTitle">
-      <span class="visually-hidden" id="formTitle">Population Chart Generator Form</span>
-
-      <div class="form-section">
-        <label for="country">
-          <h4>Country Code</h4>
-          <small id="countryHelp">Enter three-letter code (e.g., JPN, USA, FIN)</small>
-        </label>
-        <input type="text" id="country" placeholder="e.g., JPN" maxlength="3" class="form-input"
-          aria-describedby="countryHelp" autocomplete="off" aria-required="true" aria-invalid="false">
-      </div>
-
-      <div class="form-section">
-        <label for="indicatorCode">
-          <h4>Population Indicator</h4>
-          <small id="indicatorHelp">Select the type of population data to visualize</small>
-        </label>
-        <select id="indicatorCode" class="form-select" aria-describedby="indicatorHelp" aria-required="true"
-          aria-invalid="false">
-          <option value="">Choose an indicator...</option>
-        </select>
-      </div>
-
-      <div class="form-section form-actions">
-        <button class="btn-primary" id="renderButton" type="button" aria-label="Generate population chart">
-          <span class="btn-text">Generate Chart</span>
-          <span class="btn-icon" aria-hidden="true">📊</span>
+      <div class="header-actions">
+        <nav class="external-links" aria-label="Project links">
+          <a href="https://github.com/yumeangelica/global-population-charts" target="_blank"
+            rel="noopener noreferrer">Source code <span class="new-tab-hint">(opens in a new tab)</span></a>
+          <a href="https://yumeangelica.github.io" target="_blank" rel="noopener noreferrer">Portfolio <span
+              class="new-tab-hint">(opens in a new tab)</span></a>
+        </nav>
+        <button class="theme-toggle" type="button" role="switch" aria-checked="false" data-theme-toggle>
+          <span class="theme-toggle__track" aria-hidden="true"><span class="theme-toggle__thumb"></span></span>
+          <span>Dark mode</span>
         </button>
-        <small class="help-hint">Click to create chart or press Enter</small>
       </div>
+    </header>
 
-      <small class="help-text">
-        Need help finding country codes?
-        <a href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes" target="_blank" rel="noopener noreferrer"
-          aria-label="View complete country code list on Wikipedia (opens in new tab)">View complete list</a>
-      </small>
-    </div>
+    <main id="main-content" tabindex="-1">
+      <section class="workspace" aria-labelledby="generator-heading">
+        <form class="panel generator-panel" id="chart-form" novalidate>
+          <div class="panel-heading">
+            <p class="eyebrow">Create a visualization</p>
+            <h2 id="generator-heading">Choose a country and indicator</h2>
+          </div>
 
-    <!-- Chart -->
-    <div class="chart-container" id="chartContainer" role="region" aria-labelledby="chartTitle">
-      <h3 class="chart-title" id="chartTitle">Population Data Chart</h3>
-      <div class="chart-wrapper">
-        <canvas id="myChart" role="img" aria-label="Population data chart will be displayed here after generating"></canvas>
-      </div>
-    </div>
-  </main>
+          <div class="field">
+            <label for="country">Country code</label>
+            <p class="field-help" id="country-help">Use a three-letter ISO code, such as FIN, JPN, or USA.</p>
+            <input id="country" name="country" class="field-control" type="text" inputmode="text"
+              autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="3" pattern="[A-Za-z]{3}"
+              aria-describedby="country-help country-error" required placeholder="FIN">
+            <p class="field-error" id="country-error" hidden></p>
+          </div>
 
-  <footer id="copyRight" aria-label="Copyright information"></footer>
+          <div class="field">
+            <label for="indicator-code">Population indicator</label>
+            <p class="field-help" id="indicator-help">Select the demographic trend you want to explore.</p>
+            <select id="indicator-code" name="indicator" class="field-control" aria-describedby="indicator-help indicator-error"
+              required>
+              <option value="">Choose an indicator…</option>
+            </select>
+            <p class="field-error" id="indicator-error" hidden></p>
+          </div>
+
+          <div class="form-actions">
+            <button class="button button-primary" id="generate-button" type="submit">
+              <span class="button-label">Generate chart</span>
+              <span class="button-icon" aria-hidden="true">📈</span>
+            </button>
+            <a class="country-help-link" href="https://en.wikipedia.org/wiki/ISO_3166-1#Current_codes" target="_blank"
+              rel="noopener noreferrer">Find a country code <span class="new-tab-hint">(opens in a new tab)</span></a>
+          </div>
+
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <section class="panel results-panel" id="results" aria-labelledby="result-title" hidden>
+          <div class="result-heading">
+            <p class="eyebrow">Your visualization</p>
+            <h2 id="result-title" tabindex="-1">Population trend</h2>
+            <p class="result-summary" id="result-summary"></p>
+          </div>
+
+          <div class="chart-frame">
+            <canvas id="population-chart" role="img" aria-describedby="result-summary"></canvas>
+          </div>
+
+          <details class="data-details">
+            <summary>View the data as a table</summary>
+            <section class="table-scroll" aria-label="Population data table" tabindex="0">
+              <table>
+                <caption id="data-caption">Population data</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Year</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody id="data-table-body"></tbody>
+              </table>
+            </section>
+          </details>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>© 2021–<span data-current-year>2026</span> yumeangelica</small>
+    </footer>
+  </div>
 </body>
 
 </html>

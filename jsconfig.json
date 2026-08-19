@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["DOM", "ES2022"],
+    "skipLibCheck": true
+  },
+  "include": ["app.js", "copyright.js", "theme.js"]
+}

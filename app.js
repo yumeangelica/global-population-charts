@@ -1,410 +1,442 @@
-// Global Population Charts Application
-document.addEventListener('DOMContentLoaded', () => {
-  // World Bank population indicators configuration
-  const POPULATION_INDICATORS = [
-    { value: 'SP.POP.TOTL', text: 'Population total' },
-    { value: 'SP.POP.TOTL.MA.IN', text: 'Pop. total male' },
-    { value: 'SP.POP.TOTL.FE.IN', text: 'Pop. total female' },
-    { value: 'SP.POP.GROW', text: 'Population growth (annual %)' },
-    { value: 'SP.POP.DPND', text: 'Age dependency ratio (% of working-age pop.)' },
-    { value: 'SP.POP.DPND.YG', text: 'Age dependency ratio, young (% of working-age pop.)' },
-    { value: 'SP.POP.DPND.OL', text: 'Age dependency ratio, old (% of working-age pop.)' },
-    { value: 'SP.DYN.CBRT.IN', text: 'Birth rate, crude (per 1,000 people)' },
-    { value: 'SP.DYN.CDRT.IN', text: 'Death rate, crude (per 1,000 people)' },
-    { value: 'SP.DYN.TFRT.IN', text: 'Fertility rate, total (births per woman)' },
-    { value: 'SP.DYN.LE00.IN', text: 'Life expectancy at birth, total (years)' },
-    { value: 'SP.DYN.LE00.FE.IN', text: 'Life exp. at birth, female (years)' },
-    { value: 'SP.DYN.LE00.MA.IN', text: 'Life exp. at birth, male (years)' },
-    { value: 'SP.DYN.IMRT.IN', text: 'Mortality rate, infant (per 1,000 live births)' },
-    { value: 'SP.DYN.AMRT.FE', text: 'Mortality rate, adult, female (per 1,000 female adults)' },
-    { value: 'SP.DYN.AMRT.MA', text: 'Mortality rate, adult, male (per 1,000 male adults)' },
-    { value: 'SP.POP.65UP.TO.ZS', text: 'Population ages 65 and above (% of total)' },
-    { value: 'SP.POP.65UP.FE.IN', text: 'Pop. ages 65 and above, female' },
-    { value: 'SP.POP.65UP.MA.IN', text: 'Pop. ages 65 and above, male' },
-    { value: 'SP.POP.1564.TO.ZS', text: 'Population ages 15-64 (% of total)' },
-    { value: 'SP.POP.1564.FE.IN', text: 'Pop. ages 15-64, female' },
-    { value: 'SP.POP.1564.MA.IN', text: 'Pop. ages 15-64, male' },
-    { value: 'SP.POP.0014.TO.ZS', text: 'Population ages 0-14 (% of total)' },
-    { value: 'SP.POP.0014.FE.IN', text: 'Pop. ages 0-14, female' },
-    { value: 'SP.POP.0014.MA.IN', text: 'Pop. ages 0-14, male' },
-    { value: 'SP.URB.TOTL.IN.ZS', text: 'Urban population (% of total)' },
-    { value: 'SP.URB.TOTL', text: 'Urban population' },
-    { value: 'SP.URB.GROW', text: 'Urban population growth (annual %)' },
-    { value: 'SP.RUR.TOTL.ZS', text: 'Rural population (% of total)' },
-    { value: 'SP.RUR.TOTL', text: 'Rural population' },
-    { value: 'SP.RUR.TOTL.ZG', text: 'Rural population growth (annual %)' },
-    { value: 'EN.POP.DNST', text: 'Population density (people per sq. km)' },
-    { value: 'SP.DYN.TO65.FE.ZS', text: 'Survival to age 65, female (% of cohort)' },
-    { value: 'SP.DYN.TO65.MA.ZS', text: 'Survival to age 65, male (% of cohort)' }
+(() => {
+  'use strict';
+
+  /** @typedef {'integer' | 'percent' | 'decimal'} ValueFormat */
+  /** @typedef {{ value: string, label: string, format: ValueFormat }} Indicator */
+  /** @typedef {{ year: string, value: number }} DataRow */
+  /** @typedef {{ rows: DataRow[], countryName: string, indicator: Indicator }} ChartData */
+  /** @typedef {{ date?: string | number, value?: unknown, country?: { value?: string } }} WorldBankRecord */
+  /** @typedef {{ destroy: () => void }} ChartInstance */
+  /** @typedef {new (canvas: HTMLCanvasElement, config: object) => ChartInstance} ChartConstructor */
+
+  /** @type {Indicator[]} */
+  const INDICATORS = [
+    { value: 'SP.POP.TOTL', label: 'Population, total', format: 'integer' },
+    { value: 'SP.POP.TOTL.MA.IN', label: 'Male population, total', format: 'integer' },
+    { value: 'SP.POP.TOTL.FE.IN', label: 'Female population, total', format: 'integer' },
+    { value: 'SP.POP.GROW', label: 'Population growth (annual %)', format: 'percent' },
+    { value: 'SP.POP.DPND', label: 'Age dependency ratio (% of working-age population)', format: 'percent' },
+    { value: 'SP.POP.DPND.YG', label: 'Young dependency ratio (% of working-age population)', format: 'percent' },
+    { value: 'SP.POP.DPND.OL', label: 'Old-age dependency ratio (% of working-age population)', format: 'percent' },
+    { value: 'SP.DYN.CBRT.IN', label: 'Birth rate (per 1,000 people)', format: 'decimal' },
+    { value: 'SP.DYN.CDRT.IN', label: 'Death rate (per 1,000 people)', format: 'decimal' },
+    { value: 'SP.DYN.TFRT.IN', label: 'Fertility rate (births per woman)', format: 'decimal' },
+    { value: 'SP.DYN.LE00.IN', label: 'Life expectancy at birth, total (years)', format: 'decimal' },
+    { value: 'SP.DYN.LE00.FE.IN', label: 'Life expectancy at birth, female (years)', format: 'decimal' },
+    { value: 'SP.DYN.LE00.MA.IN', label: 'Life expectancy at birth, male (years)', format: 'decimal' },
+    { value: 'SP.DYN.IMRT.IN', label: 'Infant mortality rate (per 1,000 live births)', format: 'decimal' },
+    { value: 'SP.DYN.AMRT.FE', label: 'Adult mortality rate, female (per 1,000 adults)', format: 'decimal' },
+    { value: 'SP.DYN.AMRT.MA', label: 'Adult mortality rate, male (per 1,000 adults)', format: 'decimal' },
+    { value: 'SP.POP.65UP.TO.ZS', label: 'Population ages 65+ (% of total)', format: 'percent' },
+    { value: 'SP.POP.65UP.FE.IN', label: 'Female population ages 65+', format: 'integer' },
+    { value: 'SP.POP.65UP.MA.IN', label: 'Male population ages 65+', format: 'integer' },
+    { value: 'SP.POP.1564.TO.ZS', label: 'Population ages 15–64 (% of total)', format: 'percent' },
+    { value: 'SP.POP.1564.FE.IN', label: 'Female population ages 15–64', format: 'integer' },
+    { value: 'SP.POP.1564.MA.IN', label: 'Male population ages 15–64', format: 'integer' },
+    { value: 'SP.POP.0014.TO.ZS', label: 'Population ages 0–14 (% of total)', format: 'percent' },
+    { value: 'SP.POP.0014.FE.IN', label: 'Female population ages 0–14', format: 'integer' },
+    { value: 'SP.POP.0014.MA.IN', label: 'Male population ages 0–14', format: 'integer' },
+    { value: 'SP.URB.TOTL.IN.ZS', label: 'Urban population (% of total)', format: 'percent' },
+    { value: 'SP.URB.TOTL', label: 'Urban population, total', format: 'integer' },
+    { value: 'SP.URB.GROW', label: 'Urban population growth (annual %)', format: 'percent' },
+    { value: 'SP.RUR.TOTL.ZS', label: 'Rural population (% of total)', format: 'percent' },
+    { value: 'SP.RUR.TOTL', label: 'Rural population, total', format: 'integer' },
+    { value: 'SP.RUR.TOTL.ZG', label: 'Rural population growth (annual %)', format: 'percent' },
+    { value: 'EN.POP.DNST', label: 'Population density (people per sq. km)', format: 'decimal' },
+    { value: 'SP.DYN.TO65.FE.ZS', label: 'Survival to age 65, female (% of cohort)', format: 'percent' },
+    { value: 'SP.DYN.TO65.MA.ZS', label: 'Survival to age 65, male (% of cohort)', format: 'percent' },
   ];
 
-  // DOM element references
   const elements = {
-    countryInput: document.getElementById('country'),
-    indicatorSelect: document.getElementById('indicatorCode'),
-    renderButton: document.getElementById('renderButton'),
-    chartContainer: document.getElementById('chartContainer'),
-    chartTitle: document.getElementById('chartTitle'),
-    chartCanvas: document.getElementById('myChart')
+    form: /** @type {HTMLFormElement} */ (document.getElementById('chart-form')),
+    country: /** @type {HTMLInputElement} */ (document.getElementById('country')),
+    countryError: /** @type {HTMLParagraphElement} */ (document.getElementById('country-error')),
+    indicator: /** @type {HTMLSelectElement} */ (document.getElementById('indicator-code')),
+    indicatorError: /** @type {HTMLParagraphElement} */ (document.getElementById('indicator-error')),
+    button: /** @type {HTMLButtonElement} */ (document.getElementById('generate-button')),
+    buttonLabel: /** @type {HTMLSpanElement} */ (document.querySelector('#generate-button .button-label')),
+    buttonIcon: /** @type {HTMLSpanElement} */ (document.querySelector('#generate-button .button-icon')),
+    status: /** @type {HTMLParagraphElement} */ (document.getElementById('form-status')),
+    results: /** @type {HTMLElement} */ (document.getElementById('results')),
+    resultTitle: /** @type {HTMLHeadingElement} */ (document.getElementById('result-title')),
+    resultSummary: /** @type {HTMLParagraphElement} */ (document.getElementById('result-summary')),
+    canvas: /** @type {HTMLCanvasElement} */ (document.getElementById('population-chart')),
+    tableCaption: /** @type {HTMLTableCaptionElement} */ (document.getElementById('data-caption')),
+    tableBody: /** @type {HTMLTableSectionElement} */ (document.getElementById('data-table-body')),
   };
 
-  // Application state
-  let currentChart = null;
+  const chartWindow = /** @type {Window & typeof globalThis & { Chart?: ChartConstructor }} */ (window);
+  /** @type {ChartInstance | null} */
+  let chart = null;
+  /** @type {ChartData | null} */
+  let lastChartData = null;
+  /** @type {AbortController | null} */
+  let activeController = null;
+  let activeRequestId = 0;
 
-  // Initialize the application
-  initializeApp();
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /**
-   * Initialize the application by populating dropdowns and setting up event listeners
-   */
-  function initializeApp() {
-    populateIndicatorDropdown();
-    setupEventListeners();
-    showCopyRight();
-  }
+  const populateIndicators = () => {
+    const fragment = document.createDocumentFragment();
 
-  /**
-   * Populate the indicator dropdown with available options
-   */
-  function populateIndicatorDropdown() {
-    POPULATION_INDICATORS.forEach(indicator => {
-      const optionElement = document.createElement('option');
-      optionElement.value = indicator.value;
-      optionElement.textContent = indicator.text;
-      elements.indicatorSelect.appendChild(optionElement);
+    INDICATORS.forEach((indicator) => {
+      const option = document.createElement('option');
+      option.value = indicator.value;
+      option.textContent = indicator.label;
+      fragment.appendChild(option);
     });
-  }
+
+    elements.indicator.appendChild(fragment);
+  };
+
+  const getSelectedIndicator = () => INDICATORS.find(({ value }) => value === elements.indicator.value);
 
   /**
-   * Set up all event listeners for the application
+   * @param {number} value
+   * @param {ValueFormat} format
+   * @param {boolean} [compact]
    */
-  function setupEventListeners() {
-    elements.renderButton.addEventListener('click', handleChartGeneration);
-
-    document.addEventListener('keyup', (event) => {
-      if (event.key === 'Enter') {
-        handleChartGeneration();
-      }
+  const formatValue = (value, format, compact = false) => {
+    const useCompact = compact && Math.abs(value) >= 1000;
+    const formatter = new Intl.NumberFormat('en-US', {
+      notation: useCompact ? 'compact' : 'standard',
+      maximumFractionDigits: format === 'integer' ? (useCompact ? 1 : 0) : 2,
     });
-  }
+    const suffix = format === 'percent' ? '%' : '';
+    return `${formatter.format(value)}${suffix}`;
+  };
 
   /**
-   * Handle chart generation with validation and error handling
+   * Keep compact axis labels distinct when the visible range is narrow.
+   * @param {number} value
+   * @param {ValueFormat} format
+  * @param {{ value: string | number }[]} ticks
+  */
+  const formatAxisValue = (value, format, ticks) => {
+    if (Math.abs(value) < 1000) return formatValue(value, format);
+
+    const magnitude = Math.abs(value);
+    const divisor = magnitude >= 1_000_000_000_000
+      ? 1_000_000_000_000
+      : magnitude >= 1_000_000_000
+        ? 1_000_000_000
+        : magnitude >= 1_000_000
+          ? 1_000_000
+          : 1_000;
+    const values = ticks.map(({ value: tickValue }) => Number(tickValue)).filter(Number.isFinite);
+    const steps = values.slice(1)
+      .map((tickValue, index) => Math.abs(tickValue - values[index]))
+      .filter((step) => step > 0);
+    const scaledStep = Math.min(...steps) / divisor;
+    const maximumFractionDigits = Number.isFinite(scaledStep)
+      ? Math.min(3, Math.max(1, Math.ceil(-Math.log10(scaledStep))))
+      : 1;
+
+    const formattedValue = new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits,
+    }).format(value);
+    return `${formattedValue}${format === 'percent' ? '%' : ''}`;
+  };
+
+  /** @param {string} [message] @param {string} [state] */
+  const setStatus = (message = '', state = '') => {
+    elements.status.textContent = message;
+    if (state) {
+      elements.status.dataset.state = state;
+    } else {
+      delete elements.status.dataset.state;
+    }
+  };
+
+  /**
+   * @param {HTMLInputElement | HTMLSelectElement} control
+   * @param {HTMLElement} errorElement
    */
-  async function handleChartGeneration() {
-    if (!validateInputs()) {
+  const clearFieldError = (control, errorElement) => {
+    control.setAttribute('aria-invalid', 'false');
+    errorElement.textContent = '';
+    errorElement.hidden = true;
+  };
+
+  /**
+   * @param {HTMLInputElement | HTMLSelectElement} control
+   * @param {HTMLElement} errorElement
+   * @param {string} message
+   */
+  const setFieldError = (control, errorElement, message) => {
+    control.setAttribute('aria-invalid', 'true');
+    errorElement.textContent = message;
+    errorElement.hidden = false;
+  };
+
+  /** @returns {{ countryCode: string, indicator: Indicator } | null} */
+  const validateForm = () => {
+    clearFieldError(elements.country, elements.countryError);
+    clearFieldError(elements.indicator, elements.indicatorError);
+
+    const countryCode = elements.country.value.trim().toUpperCase();
+    /** @type {HTMLInputElement | HTMLSelectElement | null} */
+    let firstInvalidControl = null;
+
+    if (!/^[A-Z]{3}$/.test(countryCode)) {
+      setFieldError(elements.country, elements.countryError, 'Enter a three-letter country code, such as FIN.');
+      firstInvalidControl = elements.country;
+    }
+
+    if (!getSelectedIndicator()) {
+      setFieldError(elements.indicator, elements.indicatorError, 'Choose a population indicator.');
+      firstInvalidControl ??= elements.indicator;
+    }
+
+    if (firstInvalidControl) {
+      setStatus('Check the highlighted field and try again.', 'error');
+      firstInvalidControl.focus();
+      return null;
+    }
+
+    const indicator = getSelectedIndicator();
+    if (!indicator) return null;
+
+    elements.country.value = countryCode;
+    return { countryCode, indicator };
+  };
+
+  /** @param {boolean} isLoading */
+  const setLoading = (isLoading) => {
+    elements.form.setAttribute('aria-busy', String(isLoading));
+    elements.button.disabled = isLoading;
+    elements.buttonLabel.textContent = isLoading ? 'Loading data…' : 'Generate chart';
+    elements.buttonIcon.textContent = isLoading ? '⏳' : '📈';
+  };
+
+  /**
+   * @param {string} countryCode
+   * @param {string} indicatorCode
+   * @param {AbortSignal} signal
+   * @returns {Promise<unknown>}
+   */
+  const fetchData = async (countryCode, indicatorCode, signal) => {
+    const endpoint = new URL(`https://api.worldbank.org/v2/country/${encodeURIComponent(countryCode)}/indicator/${encodeURIComponent(indicatorCode)}`);
+    endpoint.searchParams.set('format', 'json');
+    endpoint.searchParams.set('per_page', '1000');
+
+    const response = await fetch(endpoint, { signal });
+    if (!response.ok) {
+      throw new Error('The World Bank service did not respond successfully.');
+    }
+
+    return response.json();
+  };
+
+  /** @param {unknown} payload */
+  const processData = (payload) => {
+    const records = Array.isArray(payload) && Array.isArray(payload[1])
+      ? /** @type {WorldBankRecord[]} */ (payload[1])
+      : [];
+    const rows = records
+      .filter((record) => record?.value !== null && Number.isFinite(Number(record.value)))
+      .map((record) => ({ year: String(record.date), value: Number(record.value) }))
+      .sort((a, b) => Number(a.year) - Number(b.year));
+
+    if (!rows.length) {
+      throw new Error('No published values were found for this country and indicator.');
+    }
+
+    return {
+      rows,
+      countryName: records.find((record) => record?.country?.value)?.country?.value ?? 'Selected country',
+    };
+  };
+
+  /** @param {string} token */
+  const getThemeColor = (token) => getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+
+  /** @param {ChartData} data */
+  const renderTable = ({ rows, countryName, indicator }) => {
+    const fragment = document.createDocumentFragment();
+
+    [...rows].reverse().forEach(({ year, value }) => {
+      const row = document.createElement('tr');
+      const yearCell = document.createElement('th');
+      const valueCell = document.createElement('td');
+      yearCell.scope = 'row';
+      yearCell.textContent = year;
+      valueCell.textContent = formatValue(value, indicator.format);
+      row.append(yearCell, valueCell);
+      fragment.appendChild(row);
+    });
+
+    elements.tableBody.replaceChildren(fragment);
+    elements.tableCaption.textContent = `${indicator.label} for ${countryName}, newest year first`;
+  };
+
+  /** @param {ChartData} data */
+  const renderChart = ({ rows, countryName, indicator }) => {
+    lastChartData = { rows, countryName, indicator };
+    elements.results.hidden = false;
+
+    if (chart) {
+      chart.destroy();
+    }
+
+    const primary = getThemeColor('--color-primary');
+    const primaryDark = getThemeColor('--color-primary-dark');
+    const primarySoft = getThemeColor('--color-primary-soft');
+    const borderSoft = getThemeColor('--color-border-soft');
+    const text = getThemeColor('--color-text');
+    const white = getThemeColor('--color-white');
+    const tooltipBackground = getThemeColor('--chart-tooltip-bg');
+    const tooltipText = getThemeColor('--chart-tooltip-text');
+    const fontFamily = 'Comfortaa, Arial, sans-serif';
+
+    const ChartLibrary = chartWindow.Chart;
+    if (!ChartLibrary) throw new Error('The chart library is unavailable.');
+
+    chart = new ChartLibrary(elements.canvas, {
+      type: 'line',
+      data: {
+        labels: rows.map(({ year }) => year),
+        datasets: [{
+          label: `${indicator.label}, ${countryName}`,
+          data: rows.map(({ value }) => value),
+          borderColor: primary,
+          backgroundColor: primarySoft,
+          pointBackgroundColor: primaryDark,
+          pointBorderColor: white,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          borderWidth: 3,
+          fill: true,
+          tension: 0.25,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: prefersReducedMotion() ? false : { duration: 350 },
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: tooltipBackground,
+            titleColor: tooltipText,
+            bodyColor: tooltipText,
+            borderColor: primary,
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: false,
+            titleFont: { family: fontFamily, weight: 700 },
+            bodyFont: { family: fontFamily },
+            callbacks: {
+              label: (/** @type {{ parsed: { y: number } }} */ context) => formatValue(context.parsed.y, indicator.format),
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid: { color: borderSoft },
+            border: { color: primary },
+            ticks: { color: text, font: { family: fontFamily, size: 11 }, maxTicksLimit: 10 },
+          },
+          y: {
+            grid: { color: borderSoft },
+            border: { color: primary },
+            ticks: {
+              color: text,
+              font: { family: fontFamily, size: 11 },
+              maxTicksLimit: 7,
+              callback: (
+                /** @type {string | number} */ value,
+                /** @type {number} */ _index,
+                /** @type {{ value: string | number }[]} */ ticks,
+              ) => formatAxisValue(Number(value), indicator.format, ticks),
+            },
+          },
+        },
+      },
+    });
+  };
+
+  /** @param {ChartData} data */
+  const showResults = ({ rows, countryName, indicator }) => {
+    const first = rows[0];
+    const latest = rows.at(-1);
+    if (!first || !latest) throw new Error('No chartable rows were provided.');
+    const title = `${indicator.label} — ${countryName}`;
+    const summary = `${rows.length} annual observations from ${first.year} to ${latest.year}. Latest available value: ${formatValue(latest.value, indicator.format)} in ${latest.year}.`;
+
+    elements.resultTitle.textContent = title;
+    elements.resultSummary.textContent = summary;
+    elements.canvas.setAttribute('aria-label', `Line chart. ${summary}`);
+    renderTable({ rows, countryName, indicator });
+    renderChart({ rows, countryName, indicator });
+    setStatus(`Chart ready for ${countryName}.`, 'success');
+
+    elements.resultTitle.focus({ preventScroll: true });
+    elements.results.scrollIntoView({
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  };
+
+  /** @param {SubmitEvent} event */
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = validateForm();
+    if (!formData) return;
+
+    if (typeof chartWindow.Chart !== 'function') {
+      setStatus('The chart library could not be loaded. Check your connection and try again.', 'error');
       return;
     }
 
+    activeController?.abort();
+    activeController = new AbortController();
+    const requestId = ++activeRequestId;
+
+    setLoading(true);
+    setStatus(`Loading ${formData.indicator.label.toLowerCase()}…`, 'loading');
+
     try {
-      setLoadingState(true);
-      const apiData = await fetchPopulationData();
-
-      if (!isValidApiResponse(apiData)) {
-        showAlert('No data found for the selected country and indicator');
-        return;
-      }
-
-      const chartData = processApiData(apiData);
-      renderPopulationChart(chartData);
-
+      const payload = await fetchData(formData.countryCode, formData.indicator.value, activeController.signal);
+      if (requestId !== activeRequestId) return;
+      const { rows, countryName } = processData(payload);
+      showResults({ rows, countryName, indicator: formData.indicator });
     } catch (error) {
-      handleApiError(error);
+      if ((error instanceof DOMException && error.name === 'AbortError') || requestId !== activeRequestId) return;
+      const message = error instanceof TypeError
+        ? 'The data request failed. Check your connection and try again.'
+        : error instanceof Error ? error.message : 'The chart could not be generated.';
+      setStatus(message, 'error');
     } finally {
-      setLoadingState(false);
-    }
-  }
-
-  /**
-   * Validate user inputs for country code and indicator selection
-   * @returns {boolean} True if inputs are valid
-   */
-  function validateInputs() {
-    const countryCode = elements.countryInput.value.trim();
-    const selectedIndicator = elements.indicatorSelect.value;
-
-    // Reset previous validation states
-    elements.countryInput.setAttribute('aria-invalid', 'false');
-    elements.indicatorSelect.setAttribute('aria-invalid', 'false');
-
-    if (!countryCode) {
-      showValidationError(elements.countryInput, 'Please enter a country code');
-      return false;
-    }
-
-    if (!selectedIndicator) {
-      showValidationError(elements.indicatorSelect, 'Please select an indicator');
-      return false;
-    }
-
-    if (!isValidCountryCode(countryCode)) {
-      showValidationError(elements.countryInput, 'Please enter a valid 3-letter country code (e.g., JPN, USA, FIN)');
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Check if country code is valid (3 letters)
-   * @param {string} countryCode - The country code to validate
-   * @returns {boolean} True if valid
-   */
-  function isValidCountryCode(countryCode) {
-    return /^[a-zA-Z]{3}$/.test(countryCode);
-  }
-
-  /**
-   * Show validation error for a specific input field
-   * @param {HTMLElement} inputElement - The input element with error
-   * @param {string} message - Error message to display
-   */
-  function showValidationError(inputElement, message) {
-    inputElement.setAttribute('aria-invalid', 'true');
-    inputElement.focus();
-    showAlert(message);
-  }
-
-  /**
-   * Display alert message to user
-   * @param {string} message - Message to display
-   */
-  function showAlert(message) {
-    alert(message);
-  }
-
-  /**
-   * Fetch population data from World Bank API
-   * @returns {Promise<Object>} API response data
-   */
-  async function fetchPopulationData() {
-    const countryCode = elements.countryInput.value.toUpperCase();
-    const indicatorCode = elements.indicatorSelect.value;
-    const apiUrl = `https://api.worldbank.org/v2/country/${countryCode}/indicator/${indicatorCode}?format=json`;
-
-    const response = await fetch(apiUrl);
-
-    if (!response.ok) {
-      throw new Error('Error fetching data. Please check your country code and try again.');
-    }
-
-    return await response.json();
-  }
-
-  /**
-   * Check if API response contains valid data
-   * @param {Object} apiData - Raw API response data
-   * @returns {boolean} True if data is valid
-   */
-  function isValidApiResponse(apiData) {
-    return apiData && apiData[1] && apiData[1].length > 0;
-  }
-
-  /**
-   * Process raw API data into chart-ready format
-   * @param {Object} apiData - Raw API response data
-   * @returns {Object} Processed chart data
-   */
-  function processApiData(apiData) {
-    const rawData = apiData[1].filter(item => item.value !== null);
-    const sortedData = rawData.sort((a, b) => a.date - b.date);
-
-    return {
-      values: sortedData.map(item => item.value),
-      labels: sortedData.map(item => item.date),
-      countryName: apiData[1][0]?.country?.value || 'Unknown Country'
-    };
-  }
-
-  /**
-   * Set loading state for the render button
-   * @param {boolean} isLoading - Whether to show loading state
-   */
-  function setLoadingState(isLoading) {
-    if (isLoading) {
-      elements.renderButton.innerHTML = '<span class="btn-text">Loading...</span><span class="btn-icon">⏳</span>';
-      elements.renderButton.disabled = true;
-    } else {
-      elements.renderButton.innerHTML = '<span class="btn-text">Generate Chart</span><span class="btn-icon">📊</span>';
-      elements.renderButton.disabled = false;
-    }
-  }
-
-  /**
-   * Handle API errors with appropriate user feedback
-   * @param {Error} error - The error that occurred
-   */
-  function handleApiError(error) {
-    console.error('API Error:', error);
-    showAlert('Network error. Please check your internet connection and try again.');
-  }
-
-  /**
-   * Render the population chart with the provided data
-   * @param {Object} chartData - Processed chart data
-   */
-  function renderPopulationChart({ values, labels, countryName }) {
-    const chartContext = elements.chartCanvas.getContext('2d');
-
-    // Destroy existing chart if present
-    if (currentChart) {
-      currentChart.destroy();
-    }
-
-    // Update chart title
-    const selectedIndicatorText = getSelectedIndicatorText();
-    elements.chartTitle.textContent = `${selectedIndicatorText} - ${countryName}`;
-
-    // Create new chart instance
-    currentChart = createChartInstance(chartContext, {
-      values,
-      labels,
-      countryName,
-      indicatorText: selectedIndicatorText
-    });
-
-    // Display chart with animation and accessibility features
-    displayChart(selectedIndicatorText, countryName, labels);
-  }
-
-  /**
-   * Get the text of the currently selected indicator
-   * @returns {string} Selected indicator display text
-   */
-  function getSelectedIndicatorText() {
-    const selectedOption = elements.indicatorSelect.options[elements.indicatorSelect.selectedIndex];
-    return selectedOption.text;
-  }
-
-  /**
-   * Create a new Chart.js instance with configuration
-   * @param {CanvasRenderingContext2D} context - Canvas context
-   * @param {Object} data - Chart data and metadata
-   * @returns {Chart} Chart.js instance
-   */
-  function createChartInstance(context, { values, labels, countryName, indicatorText }) {
-    return new Chart(context, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: `${indicatorText}, ${countryName}`,
-          data: values,
-          borderColor: 'rgb(178, 77, 137)',
-          backgroundColor: 'rgba(178, 77, 137, 0.7)',
-          hoverBackgroundColor: 'rgba(165, 79, 144, 0.9)',
-          borderWidth: 2,
-          borderRadius: 4,
-          borderSkipped: false,
-        }]
-      },
-      options: getChartOptions()
-    });
-  }
-
-  /**
-   * Get Chart.js configuration options
-   * @returns {Object} Chart options configuration
-   */
-  function getChartOptions() {
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: {
-        intersect: false,
-        mode: 'index',
-      },
-      plugins: {
-        legend: {
-          labels: {
-            color: 'rgb(178, 77, 137)',
-            font: { size: 14, weight: 600 }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(178, 77, 137, 0.9)',
-          titleColor: 'white',
-          bodyColor: 'white',
-          borderColor: 'rgb(178, 77, 137)',
-          borderWidth: 1,
-          cornerRadius: 8,
-          displayColors: false,
-          callbacks: {
-            label: function (context) {
-              const value = context.parsed.y;
-              return `${context.dataset.label}: ${value.toLocaleString()}`;
-            }
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            color: 'rgb(33, 33, 33)',
-            font: { size: 12, weight: 500 }
-          },
-          grid: {
-            color: 'rgba(178, 77, 137, 0.15)',
-            lineWidth: 1
-          },
-          border: {
-            color: 'rgba(178, 77, 137, 0.3)'
-          }
-        },
-        x: {
-          ticks: {
-            color: 'rgb(33, 33, 33)',
-            font: { size: 12, weight: 500 }
-          },
-          grid: {
-            color: 'rgba(178, 77, 137, 0.1)',
-            lineWidth: 1
-          },
-          border: {
-            color: 'rgba(178, 77, 137, 0.3)'
-          }
-        }
+      if (requestId === activeRequestId) {
+        setLoading(false);
       }
-    };
-  }
+    }
+  };
 
-  /**
-   * Display the chart container with animation and accessibility features
-   * @param {string} indicatorText - The selected indicator display text
-   * @param {string} countryName - The country name
-   * @param {Array} labels - Chart data labels (years)
-   */
-  function displayChart(indicatorText, countryName, labels) {
-    // Update canvas accessibility attributes
-    const chartDescription = `Bar chart showing ${indicatorText} for ${countryName} from ${labels[0]} to ${labels[labels.length - 1]}`;
-    elements.chartCanvas.setAttribute('aria-label', chartDescription);
+  elements.country.addEventListener('input', () => {
+    const selectionStart = elements.country.selectionStart;
+    elements.country.value = elements.country.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+    if (selectionStart !== null) elements.country.setSelectionRange(selectionStart, selectionStart);
+    clearFieldError(elements.country, elements.countryError);
+    if (elements.status.dataset.state === 'error') setStatus();
+  });
 
-    // Show chart container with animation
-    elements.chartContainer.classList.add('show');
+  elements.indicator.addEventListener('change', () => {
+    clearFieldError(elements.indicator, elements.indicatorError);
+    if (elements.status.dataset.state === 'error') setStatus();
+  });
 
-    // Announce chart completion to screen readers
-    announceChartCompletion(chartDescription);
-  }
+  elements.form.addEventListener('submit', handleSubmit);
+  window.addEventListener('themechange', () => {
+    if (lastChartData) renderChart(lastChartData);
+  });
+  window.addEventListener('beforeunload', () => {
+    activeController?.abort();
+    chart?.destroy();
+  });
 
-  /**
-   * Announce chart completion to screen readers
-   * @param {string} chartDescription - Description of the generated chart
-   */
-  function announceChartCompletion(chartDescription) {
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    announcement.className = 'visually-hidden';
-    announcement.textContent = `Chart generated successfully. ${chartDescription}`;
-
-    document.body.appendChild(announcement);
-
-    // Remove announcement after screen reader has time to read it
-    setTimeout(() => {
-      if (document.body.contains(announcement)) {
-        document.body.removeChild(announcement);
-      }
-    }, 3000);
-  }
-});
+  populateIndicators();
+})();
