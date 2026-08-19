@@ -1,59 +1,57 @@
 # Global Population Charts
 
-A vanilla JavaScript application that visualizes global population data through interactive charts, using World Bank API data. Zero framework dependencies — only Chart.js for visualization.
+A static Vanilla JavaScript app for exploring country-level population and demographic trends from the World Bank. It pairs a responsive Chart.js visualization with the same values in an accessible data table.
 
-Originally developed in 2021, modernized in 2024–2026 with portfolio-synced design, accessibility support, and responsive layout.
+Originally created in 2021 and polished in 2026 with yumeangelica's warm mauve design system, self-hosted Comfortaa, mobile-first CSS, and clearer form and result states.
 
 ## Features
 
-- **Country Code Input** — enter any three-letter ISO 3166-1 alpha-3 code
-- **34 Demographic Indicators** — population totals, growth rates, age distribution, dependency ratios, birth/death rates, fertility, life expectancy, mortality, urban/rural data, density, survival rates
-- **Interactive Charts** — responsive bar charts powered by Chart.js with custom portfolio-themed colors
-- **Input Validation** — 3-letter code validation with error feedback
-- **Loading States** — button state changes during API fetch
-- **Accessibility** — ARIA labels, keyboard navigation (Enter to submit), screen reader announcements
-- **Responsive Design** — mobile-first layout from 480px to desktop
+- Three-letter country code lookup with inline validation
+- 34 population, age, health, urbanization, and mortality indicators
+- Complete published time series requested with `per_page=1000`
+- Responsive line chart with indicator-aware number formatting
+- Visible latest-value summary and expandable year/value table
+- Loading, empty, network error, and superseded-request handling
+- System-aware light/dark theme switch with a saved user preference
+- Keyboard focus, reduced-motion, forced-colors, and zoom-friendly layouts
 
-## Technologies
+## Technology
 
-- **Vanilla JavaScript (ES6+)** — async/await, DOM manipulation, no frameworks
-- **HTML5** — semantic markup with ARIA attributes
-- **CSS3** — custom properties, Flexbox, responsive design
-- **Google Fonts (Inter)** — consistent typography across portfolio
-- **Chart.js 4.5.0** — interactive data visualization
-- **World Bank API** — real-time demographic data
-- **Zero Framework Dependencies** — no Bootstrap, no npm packages
+- Semantic HTML, modern CSS, and Vanilla JavaScript
+- [Chart.js 4.5.1](https://www.chartjs.org/) self-hosted in `vendor/` (no CDN request)
+- [World Bank Indicators API v2](https://datahelpdesk.worldbank.org/knowledgebase/articles/898581-api-basic-call-structures)
+- Self-hosted Comfortaa 400/600/700 under the SIL Open Font License
+- No framework, package manager, or build step
 
-## Getting Started
+## Run locally
 
-1. Open `index.html` in any modern web browser
-2. Enter a valid three-letter country code (e.g., `JPN`, `USA`, `FIN`)
-3. Select a population indicator from the dropdown
-4. Click "Generate Chart" or press Enter
+Open `index.html` directly, or serve the directory for a browser-like local origin:
 
-## Project Structure
-
-```
-├── index.html      # Main HTML document
-├── styles.css      # All styles with CSS custom properties
-├── app.js          # API integration, chart rendering, validation
-├── copyright.js    # Dynamic footer copyright year
-├── LICENSE         # CC BY-NC-SA 4.0
-└── README.md
+```sh
+python3 -m http.server 4173
 ```
 
-## Browser Support
+Then open `http://localhost:4173`, enter a code such as `FIN`, choose an indicator, and generate a chart.
 
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
-- Mobile: iOS Safari, Chrome Mobile, Samsung Internet
+## Accessibility notes
+
+The UI uses native form controls, inline field errors, a single polite status region, a keyboard-focusable result heading, a textual summary, and a table alternative to canvas. It targets WCAG 2.2 AA practices, but this is not a claim of complete conformance without assistive-technology and device testing.
+
+## Project structure
+
+```text
+index.html       Semantic generator and results
+styles.css       Palette A tokens and mobile-first styles
+app.js           API, validation, chart, and table behavior
+theme.js         Early theme setup, switch state, and saved preference
+copyright.js     Current footer year
+fonts/           Local Comfortaa files and OFL license
+```
 
 ## License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. See the [LICENSE](LICENSE) file for details.
+Application code and content are licensed under [CC BY-NC-SA 4.0](LICENSE). Comfortaa remains under the SIL Open Font License in `fonts/OFL.txt`; Chart.js is distributed under its own MIT license.
 
 ---
 
-**Created with love by [yumeangelica](https://yumeangelica.github.io) | 2021–2026**
+Created with love by [yumeangelica](https://yumeangelica.github.io) · 2021–2026
